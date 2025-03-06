@@ -33,6 +33,9 @@ class CalendarManager:
                         caldav_url = caldav_url + "/events"
             elif "calendar.yandex.ru" in caldav_url:
                 # Для Yandex Calendar
+                # Yandex использует специфический формат URL для CalDAV
+                caldav_url = f"https://caldav.yandex.ru/calendars/{CALDAV_USERNAME}/"
+                logging.info(f"Переопределен URL для Yandex Calendar: {caldav_url}")
                 headers = {
                     "Content-Type": "application/xml; charset=utf-8",
                     "Accept": "application/xml",
