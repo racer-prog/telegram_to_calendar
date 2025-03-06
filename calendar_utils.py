@@ -12,11 +12,18 @@ class CalendarManager:
         self.connected = False
         
         try:
+            # Заголовки, которые могут потребоваться для Google Calendar
+            headers = {
+                "User-Agent": "CalendarBot/1.0",
+                "Content-Type": "application/xml; charset=utf-8"
+            }
+            
             self.client = caldav.DAVClient(
                 url=CALDAV_URL,
                 username=CALDAV_USERNAME,
                 password=CALDAV_PASSWORD,
-                ssl_verify_cert=False  # Отключаем проверку SSL-сертификата (для отладки)
+                ssl_verify_cert=False,  # Отключаем проверку SSL-сертификата (для отладки)
+                headers=headers
             )
             self.principal = self.client.principal()
             calendars = self.principal.calendars()
