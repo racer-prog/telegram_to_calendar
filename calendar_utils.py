@@ -12,26 +12,38 @@ class CalendarManager:
         self.connected = False
         
         try:
-            # Заголовки, которые могут потребоваться для Google Calendar
+            # Заголовки для Google Calendar
             headers = {
                 "User-Agent": "CalendarBot/1.0",
-                "Content-Type": "application/xml; charset=utf-8"
+                "Content-Type": "application/xml; charset=utf-8",
+                "Accept": "application/xml",
+                "Depth": "1"
             }
             
+            logging.info(f"Подключение к CalDAV серверу: {CALDAV_URL}")
+            
+            # Создаем клиента CalDAV
             self.client = caldav.DAVClient(
                 url=CALDAV_URL,
                 username=CALDAV_USERNAME,
                 password=CALDAV_PASSWORD,
-                ssl_verify_cert=False,  # Отключаем проверку SSL-сертификата (для отладки)
+                ssl_verify_cert=False,  # В продакшене этот параметр следует установить в True
                 headers=headers
             )
+            
+            # Пробуем получить информацию о пользователе
             self.principal = self.client.principal()
+            logging.info(f"Получен principal: {self.principal}")
+            
+            # Получаем доступные календари
             calendars = self.principal.calendars()
+            logging.info(f"Найдено календарей: {len(calendars)}")
             
             if calendars:
                 # Получаем первый доступный календарь пользователя
                 self.calendar = calendars[0]
                 self.connected = True
+                logging.info(f"Выбран календарь: {self.calendar}")
                 logging.info("Подключение к CalDAV успешно установлено")
             else:
                 logging.error("Нет доступных календарей")
