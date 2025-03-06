@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.utils.markdown import hbold
-from datetime import datetime
+from datetime import datetime, timedelta
 import calendar_utils
 import logging
 
@@ -111,15 +111,26 @@ async def command_add_event_handler(message: Message) -> None:
             return
 
         # Добавление события в календарь
+        await message.answer(f"Добавляю событие '{summary}'...")
         success = await calendar_manager.add_event(summary, start_time)
+
         if success:
-            await message.answer(f"Событие '{summary}' успешно добавлено в календарь.")
+            # Проверяем наличие события в списке
+            events = await calendar_manager.list_events(
+                start_date=start_time,
+                end_date=start_time + timedelta(hours=1)
+            )
+            if any(event['summary'] == summary for event in events):
+                await message.answer(f"Событие '{summary}' успешно добавлено и подтверждено в календаре.")
+            else:
+                await message.answer(f"Событие '{summary}' было добавлено, но его не видно в календаре. Пожалуйста, проверьте календарь напрямую или попробуйте снова.")
         else:
-            await message.answer("Произошла ошибка при добавлении события в календарь. Пожалуйста, повторите попытку.")
+            await message.answer("Произошла ошибка при добавлении события в календарь. Пожалуйста, повторите попытку позже.")
 
     except Exception as e:
-        await message.answer("Извините, произошла ошибка при добавлении события.")
         logging.error(f"Ошибка в обработчике add_event: {e}")
+        await message.answer("Извините, произошла ошибка при добавлении события. Пожалуйста, убедитесь, что формат команды верный и попробуйте снова.")
+
 @router.message(F.text)
 async def echo_handler(message: Message) -> None:
     """
