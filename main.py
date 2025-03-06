@@ -14,7 +14,8 @@ logging.basicConfig(level=config.LOG_LEVEL,
 
 # Инициализация бота и диспетчера
 # ParseMode.HTML позволяет использовать HTML-разметку в сообщениях
-bot = Bot(token=config.BOT_TOKEN, parse_mode=ParseMode.HTML)
+from aiogram.client.default import DefaultBotProperties
+bot = Bot(token=config.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 
 # Регистрация обработчиков сообщений
