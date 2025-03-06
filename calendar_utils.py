@@ -12,7 +12,7 @@ class CalendarManager:
         self.connected = False
         
         try:
-            # Заголовки для Google Calendar
+            # Заголовки для CalDAV серверов
             headers = {
                 "User-Agent": "CalendarBot/1.0",
                 "Content-Type": "application/xml; charset=utf-8",
@@ -22,25 +22,45 @@ class CalendarManager:
             
             logging.info(f"Подключение к CalDAV серверу: {CALDAV_URL}")
             
-            # Создаем клиента CalDAV
-            # URL для Google Calendar должен быть в формате: https://apidata.googleusercontent.com/caldav/v2/[email]/events
-            # Убедимся, что URL имеет правильный формат
+            # Определяем тип сервера и корректируем URL
             caldav_url = CALDAV_URL
-            if "googleapis.com" in caldav_url and not caldav_url.endswith("/events"):
-                if caldav_url.endswith("/user"):
-                    caldav_url = caldav_url.replace("/user", "/events")
-                elif not caldav_url.endswith("/events"):
-                    caldav_url = caldav_url + "/events"
+            if "googleapis.com" in caldav_url:
+                # Для Google Calendar
+                if not caldav_url.endswith("/events"):
+                    if caldav_url.endswith("/user"):
+                        caldav_url = caldav_url.replace("/user", "/events")
+                    elif not caldav_url.endswith("/events"):
+                        caldav_url = caldav_url + "/events"
+            elif "calendar.yandex.ru" in caldav_url:
+                # Для Yandex Calendar
+                headers = {
+                    "Content-Type": "application/xml; charset=utf-8",
+                    "Accept": "application/xml",
+                    "Depth": "1",
+                    "User-Agent": "Mozilla/5.0 CalendarBot/1.0"
+                }
             
             logging.info(f"Используемый URL CalDAV: {caldav_url}")
             
-            self.client = caldav.DAVClient(
-                url=caldav_url,
-                username=CALDAV_USERNAME,
-                password=CALDAV_PASSWORD,
-                ssl_verify_cert=False,  # В продакшене этот параметр следует установить в True
-                headers=headers
-            )
+            # Создаем клиент с учетом типа сервера
+            if "calendar.yandex.ru" in caldav_url:
+                # Для Yandex Calendar
+                self.client = caldav.DAVClient(
+                    url=caldav_url,
+                    username=CALDAV_USERNAME,
+                    password=CALDAV_PASSWORD,
+                    ssl_verify_cert=False,
+                    headers=headers
+                )
+            else:
+                # Для других серверов
+                self.client = caldav.DAVClient(
+                    url=caldav_url,
+                    username=CALDAV_USERNAME,
+                    password=CALDAV_PASSWORD,
+                    ssl_verify_cert=False,  # В продакшене этот параметр следует установить в True
+                    headers=headers
+                )
             
             # Пробуем получить информацию о пользователе
             self.principal = self.client.principal()
