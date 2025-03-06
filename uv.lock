@@ -616,6 +616,7 @@ dependencies = [
     { name = "aiogram" },
     { name = "caldav" },
     { name = "python-dotenv" },
+    { name = "urllib3" },
 ]
 
 [package.metadata]
@@ -623,6 +624,7 @@ requires-dist = [
     { name = "aiogram", specifier = ">=3.18.0" },
     { name = "caldav", specifier = ">=1.4.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
+    { name = "urllib3", specifier = ">=2.3.0" },
 ]
 
 [[package]]
