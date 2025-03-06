@@ -106,19 +106,20 @@ async def command_add_event_handler(message: Message) -> None:
         except ValueError:
             await message.answer(
                 "Неверный формат даты или времени.\n"
-                "Используйте формат: ГГГГ-ММ-ДД ЧЧ:ММ\n"
-                "Пример: 2024-03-07 15:00"
+                "Используйте формат: ГГГГ-ММ-ДД ЧЧ:ММ"
             )
             return
 
-        if await calendar_manager.add_event(summary, start_time):
+        # Добавление события в календарь
+        success = await calendar_manager.add_event(summary, start_time)
+        if success:
             await message.answer(f"Событие '{summary}' успешно добавлено в календарь.")
         else:
-            await message.answer("Извините, не удалось добавить событие.")
+            await message.answer("Произошла ошибка при добавлении события в календарь. Пожалуйста, повторите попытку.")
+
     except Exception as e:
         await message.answer("Извините, произошла ошибка при добавлении события.")
         logging.error(f"Ошибка в обработчике add_event: {e}")
-
 @router.message(F.text)
 async def echo_handler(message: Message) -> None:
     """
