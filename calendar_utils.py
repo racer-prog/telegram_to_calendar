@@ -4,7 +4,7 @@ import urllib3
 from datetime import datetime, timedelta
 from config import CALDAV_URL, CALDAV_USERNAME, CALDAV_PASSWORD
 
-# Disable SSL verification warnings
+# Отключение предупреждений о SSL верификации
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class CalendarManager:
@@ -14,7 +14,7 @@ class CalendarManager:
         self.principal = None
         self.calendar = None
         self.connected = False
-        
+
         try:
             # Заголовки для CalDAV серверов
             headers = {
@@ -23,9 +23,9 @@ class CalendarManager:
                 "Accept": "application/xml",
                 "Depth": "1"
             }
-            
+
             logging.info(f"Подключение к CalDAV серверу: {CALDAV_URL}")
-            
+
             # Определяем тип сервера и корректируем URL
             caldav_url = CALDAV_URL
             if "googleapis.com" in caldav_url:
@@ -46,9 +46,9 @@ class CalendarManager:
                     "Depth": "1",
                     "User-Agent": "Mozilla/5.0 CalendarBot/1.0"
                 }
-            
+
             logging.info(f"Используемый URL CalDAV: {caldav_url}")
-            
+
             # Создаем клиент с учетом типа сервера
             if "calendar.yandex.ru" in caldav_url:
                 # Для Yandex Calendar
@@ -68,15 +68,15 @@ class CalendarManager:
                     ssl_verify_cert=False,  # В продакшене этот параметр следует установить в True
                     headers=headers
                 )
-            
+
             # Пробуем получить информацию о пользователе
             self.principal = self.client.principal()
             logging.info(f"Получен principal: {self.principal}")
-            
+
             # Получаем доступные календари
             calendars = self.principal.calendars()
             logging.info(f"Найдено календарей: {len(calendars)}")
-            
+
             if calendars:
                 # Получаем первый доступный календарь пользователя
                 self.calendar = calendars[0]
@@ -92,7 +92,7 @@ class CalendarManager:
     async def add_event(self, summary: str, start_time: datetime, end_time: datetime = None) -> bool:
         """
         Добавление события в календарь
-        
+
         :param summary: Название события
         :param start_time: Время начала события
         :param end_time: Время окончания события (по умолчанию +1 час от начала)
@@ -101,7 +101,7 @@ class CalendarManager:
         try:
             if not end_time:
                 end_time = start_time + timedelta(hours=1)
-            
+
             event = self.calendar.save_event(
                 dtstart=start_time,
                 dtend=end_time,
@@ -115,7 +115,7 @@ class CalendarManager:
     async def list_events(self, start_date: datetime = None, end_date: datetime = None) -> list:
         """
         Получение списка событий за указанный период
-        
+
         :param start_date: Начальная дата (по умолчанию сегодня)
         :param end_date: Конечная дата (по умолчанию +7 дней)
         :return: Список событий
