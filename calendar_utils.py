@@ -6,18 +6,31 @@ from config import CALDAV_URL, CALDAV_USERNAME, CALDAV_PASSWORD
 class CalendarManager:
     def __init__(self):
         """Инициализация подключения к CalDAV серверу"""
+        self.client = None
+        self.principal = None
+        self.calendar = None
+        self.connected = False
+        
         try:
             self.client = caldav.DAVClient(
                 url=CALDAV_URL,
                 username=CALDAV_USERNAME,
-                password=CALDAV_PASSWORD
+                password=CALDAV_PASSWORD,
+                ssl_verify_cert=False  # Отключаем проверку SSL-сертификата (для отладки)
             )
             self.principal = self.client.principal()
-            # Получаем первый доступный календарь пользователя
-            self.calendar = self.principal.calendars()[0]
+            calendars = self.principal.calendars()
+            
+            if calendars:
+                # Получаем первый доступный календарь пользователя
+                self.calendar = calendars[0]
+                self.connected = True
+                logging.info("Подключение к CalDAV успешно установлено")
+            else:
+                logging.error("Нет доступных календарей")
         except Exception as e:
             logging.error(f"Ошибка при подключении к CalDAV серверу: {e}")
-            raise
+            # Не вызываем raise, чтобы бот продолжал работать
 
     async def add_event(self, summary: str, start_time: datetime, end_time: datetime = None) -> bool:
         """

@@ -60,8 +60,8 @@ async def command_events_handler(message: Message) -> None:
     Обработчик команды /events
     Показывает список событий на ближайшую неделю
     """
-    if not calendar_manager:
-        await message.answer("Извините, календарь недоступен.")
+    if not calendar_manager or not calendar_manager.connected:
+        await message.answer("Извините, календарь в данный момент недоступен. Пожалуйста, проверьте настройки CalDAV или попробуйте позже.")
         return
 
     try:
@@ -86,8 +86,8 @@ async def command_add_event_handler(message: Message) -> None:
     Обработчик команды /add_event
     Добавляет новое событие в календарь
     """
-    if not calendar_manager:
-        await message.answer("Извините, календарь недоступен.")
+    if not calendar_manager or not calendar_manager.connected:
+        await message.answer("Извините, календарь в данный момент недоступен. Пожалуйста, проверьте настройки CalDAV или попробуйте позже.")
         return
 
     try:
