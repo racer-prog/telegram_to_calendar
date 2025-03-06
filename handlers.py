@@ -26,7 +26,7 @@ async def command_start_handler(message: Message) -> None:
             f"Привет, {hbold(message.from_user.full_name)}!\n"
             f"Я бот для работы с календарем. Вот что я умею:\n"
             f"- /events - Показать события на неделю\n"
-            f"- /add_event <название> <дата> <время> - Добавить событие\n"
+            f"- /add_event [название] [дата] [время] - Добавить событие\n"
             f"- /help - Показать справку\n"
         )
     except Exception as e:
@@ -45,7 +45,7 @@ async def command_help_handler(message: Message) -> None:
             "/start - Запустить бота\n"
             "/help - Показать это сообщение помощи\n"
             "/events - Показать события на неделю\n"
-            "/add_event <название> <дата> <время> - Добавить событие\n"
+            "/add_event [название] [дата] [время] - Добавить событие\n"
             "\nПример добавления события:\n"
             "/add_event Встреча 2024-03-07 15:00"
         )
