@@ -1,7 +1,11 @@
 import caldav
 import logging
+import urllib3
 from datetime import datetime, timedelta
 from config import CALDAV_URL, CALDAV_USERNAME, CALDAV_PASSWORD
+
+# Disable SSL verification warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class CalendarManager:
     def __init__(self):
